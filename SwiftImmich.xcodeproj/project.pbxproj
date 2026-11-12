@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A10000000000000000000062 /* ImmichAPI in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000061 /* ImmichAPI */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		A10000000000000000000020 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -39,6 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000000000000000000062 /* ImmichAPI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +96,7 @@
 			);
 			name = SwiftImmich;
 			packageProductDependencies = (
+				A10000000000000000000061 /* ImmichAPI */,
 			);
 			productName = SwiftImmich;
 			productReference = A10000000000000000000011 /* SwiftImmich.app */;
@@ -150,6 +156,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A10000000000000000000050 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
+				A10000000000000000000060 /* XCLocalSwiftPackageReference "ImmichAPI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A10000000000000000000003 /* Products */;
@@ -400,6 +407,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		A10000000000000000000060 /* XCLocalSwiftPackageReference "ImmichAPI" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ImmichAPI;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		A10000000000000000000050 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -412,6 +426,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A10000000000000000000061 /* ImmichAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ImmichAPI;
+		};
 		A10000000000000000000052 /* SwiftLintBuildToolPlugin */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A10000000000000000000050 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;

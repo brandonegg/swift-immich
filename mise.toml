@@ -53,11 +53,27 @@ description = "Build the app and tests for the simulator"
 run = "mise-tasks/xcodebuild build-for-testing"
 
 [tasks.test]
-description = "Build and run unit tests on the simulator"
+description = "Run all unit tests (app and ImmichAPI package)"
+depends = ["test:*"]
+
+[tasks."test:app"]
+description = "Build and run the app's unit tests on the simulator"
 run = [
   "rm -rf .build/TestResults.xcresult",
   "mise-tasks/xcodebuild test -resultBundlePath .build/TestResults.xcresult",
 ]
+
+[tasks."test:api"]
+description = "Run the ImmichAPI package's tests on macOS"
+run = "swift test --package-path ImmichAPI"
+
+[tasks."api:update"]
+description = "Download the Immich OpenAPI spec for a release, e.g. `mise run api:update v3.4.1`"
+usage = 'arg "<version>" help="Immich release tag, e.g. v3.4.1"'
+run = """
+curl -fsSL "https://raw.githubusercontent.com/immich-app/immich/${usage_version}/open-api/immich-openapi-specs.json" \
+  -o ImmichAPI/Sources/ImmichAPI/openapi.json
+"""
 
 [tasks.unused]
 description = "Find unused code with Periphery (scans the index from `mise run build`)"
