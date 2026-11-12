@@ -17,6 +17,7 @@ env:
   XCODE_VERSION: "27.2"
   # Keep in sync with the SwiftLintPlugins version pinned in the Xcode project.
   SWIFTLINT_VERSION: "0.65.1"
+  PERIPHERY_VERSION: "3.8.0"
   SIMULATOR_DESTINATION: "platform=iOS Simulator,name=iPhone 17,OS=27.2"
 
 jobs:
@@ -74,6 +75,22 @@ jobs:
             -skipPackagePluginValidation \
             -skipMacroValidation \
             | xcbeautify --renderer github-actions
+
+      - name: Install Periphery
+        run: |
+          curl -sSL -o "$RUNNER_TEMP/periphery.zip" \
+            "https://github.com/peripheryapp/periphery/releases/download/${PERIPHERY_VERSION}/periphery-${PERIPHERY_VERSION}.zip"
+          unzip -q "$RUNNER_TEMP/periphery.zip" -d "$RUNNER_TEMP/periphery"
+          echo "$RUNNER_TEMP/periphery" >> "$GITHUB_PATH"
+
+      # Reuses the index produced by the test build above instead of building again.
+      - name: Unused code (Periphery)
+        run: |
+          periphery scan \
+            --skip-build \
+            --index-store-path .build/DerivedData/Index.noindex/DataStore \
+            --format github-actions \
+            --strict
 
       - name: Upload test results
         if: always()

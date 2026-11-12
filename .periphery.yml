@@ -1,0 +1,10 @@
+# Periphery (unused code detection) — https://github.com/peripheryapp/periphery
+# Run locally with: periphery scan
+project: SwiftImmich.xcodeproj
+schemes:
+  - SwiftImmich
+retain_swift_ui_previews: true
+# API response models often decode fields we don't read yet.
+retain_codable_properties: true
+relative_results: true
+disable_update_check: true
