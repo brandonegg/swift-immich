@@ -22,6 +22,7 @@ disabled_rules:
   - statement_position
   - comma
   - colon
+  # TODO/FIXME comments allowed during early development
   - todo
 
 opt_in_rules:
