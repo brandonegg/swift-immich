@@ -5,6 +5,9 @@
 included:
   - SwiftImmich
   - SwiftImmichTests
+  - ImmichAPI/Package.swift
+  - ImmichAPI/Sources
+  - ImmichAPI/Tests
 
 excluded:
   - DerivedData

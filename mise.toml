@@ -16,7 +16,7 @@ lockfile = true
 XCODE_VERSION = "27.2"
 SIMULATOR_DESTINATION = "platform=iOS Simulator,name=iPhone 17,OS=27.2"
 DERIVED_DATA = "{{config_root}}/.build/DerivedData"
-SWIFT_SOURCES = "SwiftImmich SwiftImmichTests"
+SWIFT_SOURCES = "SwiftImmich SwiftImmichTests ImmichAPI/Package.swift ImmichAPI/Sources ImmichAPI/Tests"
 
 [hooks]
 # Enable the project's git hooks, without replacing a hooksPath someone already set.
