@@ -5,8 +5,10 @@ import Testing
 
 @MainActor
 struct SwiftImmichTests {
-    @Test func contentViewBuilds() {
-        let view = ContentView()
-        #expect(type(of: view.body) != Never.self)
+    // Placeholder until there's real logic to test (e.g. a view model or the
+    // API client). It verifies nothing beyond the test target building and
+    // linking against the app module.
+    @Test func placeholder() {
+        _ = ContentView()
     }
 }
