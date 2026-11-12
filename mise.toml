@@ -19,7 +19,15 @@ DERIVED_DATA = "{{config_root}}/.build/DerivedData"
 SWIFT_SOURCES = "SwiftImmich SwiftImmichTests"
 
 [hooks]
-postinstall = "git config core.hooksPath .githooks"
+# Enable the project's git hooks, without replacing a hooksPath someone already set.
+postinstall = """
+current=$(git config core.hooksPath || true)
+if [ -z "$current" ]; then
+  git config core.hooksPath .githooks
+elif [ "$current" != ".githooks" ]; then
+  echo "warning: core.hooksPath is already set to '$current'; the project's pre-commit hook (.githooks/pre-commit) is not active. Call it from your own hook to enable it." >&2
+fi
+"""
 
 [tasks.format]
 description = "Format Swift sources in place and auto-fix SwiftLint issues"
