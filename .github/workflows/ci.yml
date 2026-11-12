@@ -12,13 +12,9 @@ concurrency:
 permissions:
   contents: read
 
-env:
-  XCODE_VERSION: "27.2"
-  # Keep in sync with the SwiftLintPlugins version pinned in the Xcode project.
-  SWIFTLINT_VERSION: "0.65.1"
-  PERIPHERY_VERSION: "3.8.0"
-  SIMULATOR_DESTINATION: "platform=iOS Simulator,name=iPhone 17,OS=27.2"
-
+# Tool versions, env and commands live in mise.toml. Each job installs the
+# pinned tools (cached, verified against mise.lock) and runs the same tasks
+# used locally.
 jobs:
   lint:
     name: Lint
@@ -26,22 +22,10 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
-
-      - name: Select Xcode
-        run: sudo xcode-select -s "/Applications/Xcode_${XCODE_VERSION}.app"
-
-      - name: Install SwiftLint
-        run: |
-          curl -sSL -o "$RUNNER_TEMP/swiftlint.zip" \
-            "https://github.com/realm/SwiftLint/releases/download/${SWIFTLINT_VERSION}/portable_swiftlint.zip"
-          unzip -q "$RUNNER_TEMP/swiftlint.zip" -d "$RUNNER_TEMP/swiftlint"
-          echo "$RUNNER_TEMP/swiftlint" >> "$GITHUB_PATH"
-
-      - name: swift-format
-        run: swift format lint --strict --recursive --parallel SwiftImmich SwiftImmichTests
-
-      - name: SwiftLint
-        run: swiftlint lint --strict --reporter github-actions-logging
+      - uses: jdx/mise-action@v5
+      - run: mise run xcode:select
+      - run: mise run doctor
+      - run: mise run lint
 
   test:
     name: Build & Test
@@ -49,9 +33,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
-
-      - name: Select Xcode
-        run: sudo xcode-select -s "/Applications/Xcode_${XCODE_VERSION}.app"
+      - uses: jdx/mise-action@v5
+      - run: mise run xcode:select
 
       - name: Cache Swift packages
         uses: actions/cache@v6
@@ -60,36 +43,10 @@ jobs:
           key: spm-${{ runner.os }}-${{ hashFiles('**/Package.resolved') }}
           restore-keys: spm-${{ runner.os }}-
 
-      - name: Build and test
-        run: |
-          set -o pipefail
-          xcodebuild test \
-            -project SwiftImmich.xcodeproj \
-            -scheme SwiftImmich \
-            -destination "$SIMULATOR_DESTINATION" \
-            -derivedDataPath .build/DerivedData \
-            -clonedSourcePackagesDirPath .build/SourcePackages \
-            -resultBundlePath .build/TestResults.xcresult \
-            -enableCodeCoverage YES \
-            -skipPackagePluginValidation \
-            -skipMacroValidation \
-            | xcbeautify --renderer github-actions
+      - run: mise run test
 
-      - name: Install Periphery
-        run: |
-          curl -sSL -o "$RUNNER_TEMP/periphery.zip" \
-            "https://github.com/peripheryapp/periphery/releases/download/${PERIPHERY_VERSION}/periphery-${PERIPHERY_VERSION}.zip"
-          unzip -q "$RUNNER_TEMP/periphery.zip" -d "$RUNNER_TEMP/periphery"
-          echo "$RUNNER_TEMP/periphery" >> "$GITHUB_PATH"
-
-      # Reuses the index produced by the test build above instead of building again.
-      - name: Unused code (Periphery)
-        run: |
-          periphery scan \
-            --skip-build \
-            --index-store-path .build/DerivedData/Index.noindex/DataStore \
-            --format github-actions \
-            --strict
+      # Reuses the index from the test build, so this is an incremental no-op build.
+      - run: mise run unused
 
       - name: Upload test results
         if: always()
