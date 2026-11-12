@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+# Tool versions, env and commands live in mise.toml. Each job installs the
+# pinned tools (cached, verified against mise.lock) and runs the same tasks
+# used locally.
+jobs:
+  lint:
+    name: Lint
+    runs-on: xcode-27
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+      - run: mise run xcode:select
+      - run: mise run doctor
+      - run: mise run lint
+
+  test:
+    name: Build & Test
+    runs-on: xcode-27
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+      - run: mise run xcode:select
+      - run: mise run doctor
+
+      - name: Cache Swift packages
+        uses: actions/cache@v6
+        with:
+          path: .build/SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: spm-${{ runner.os }}-
+
+      - run: mise run test
+
+      # Reuses the index from the test build, so this is an incremental no-op build.
+      - run: mise run unused
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: TestResults
+          path: .build/TestResults.xcresult
+          if-no-files-found: ignore

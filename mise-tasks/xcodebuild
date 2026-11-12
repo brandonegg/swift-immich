@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#MISE description="Run xcodebuild with the project's shared flags (used by build/test)"
+#MISE hide=true
+set -euo pipefail
+
+flags=(
+    -project SwiftImmich.xcodeproj
+    -scheme SwiftImmich
+    -destination "$SIMULATOR_DESTINATION"
+    -derivedDataPath "$DERIVED_DATA"
+    -clonedSourcePackagesDirPath .build/SourcePackages
+    -skipPackagePluginValidation
+    -skipMacroValidation
+    # Shared by build and test so both use identical build settings (no rebuild).
+    -enableCodeCoverage YES
+)
+
+xcodebuild "$@" "${flags[@]}" | xcbeautify ${GITHUB_ACTIONS:+--renderer github-actions}

@@ -1,0 +1,73 @@
+# Project tooling: pinned CLI tools, shared env, and tasks.
+# Setup: `brew install mise && mise install`. List tasks: `mise tasks`.
+min_version = "2026.11.0"
+
+[settings]
+lockfile = true
+
+[tools]
+# Keep swiftlint in step with the SwiftLintPlugins package pinned in the
+# Xcode project; `mise run doctor` (also run in CI) fails if they differ.
+"aqua:realm/SwiftLint" = "0.65.1"
+"aqua:peripheryapp/periphery" = "3.8.0"
+"aqua:cpisciotta/xcbeautify" = "3.2.1"
+
+[env]
+XCODE_VERSION = "27.2"
+SIMULATOR_DESTINATION = "platform=iOS Simulator,name=iPhone 17,OS=27.2"
+DERIVED_DATA = "{{config_root}}/.build/DerivedData"
+SWIFT_SOURCES = "SwiftImmich SwiftImmichTests"
+
+[hooks]
+# Enable the project's git hooks, without replacing a hooksPath someone already set.
+postinstall = """
+current=$(git config core.hooksPath || true)
+if [ -z "$current" ]; then
+  git config core.hooksPath .githooks
+elif [ "$current" != ".githooks" ]; then
+  echo "warning: core.hooksPath is already set to '$current'; the project's pre-commit hook (.githooks/pre-commit) is not active. Call it from your own hook to enable it." >&2
+fi
+"""
+
+[tasks.format]
+description = "Format Swift sources in place and auto-fix SwiftLint issues"
+run = [
+  "swift format format --in-place --recursive --parallel $SWIFT_SOURCES",
+  "swiftlint lint --fix --quiet",
+]
+
+[tasks.lint]
+description = "Check formatting and lint rules (same as CI)"
+depends = ["lint:*"]
+
+[tasks."lint:format"]
+description = "Check formatting with swift-format"
+run = "swift format lint --strict --recursive --parallel $SWIFT_SOURCES"
+
+[tasks."lint:swiftlint"]
+description = "Lint with SwiftLint"
+run = "swiftlint lint --strict --quiet ${GITHUB_ACTIONS:+--reporter github-actions-logging}"
+
+[tasks.build]
+description = "Build the app and tests for the simulator"
+run = "mise-tasks/xcodebuild build-for-testing"
+
+[tasks.test]
+description = "Build and run unit tests on the simulator"
+run = [
+  "rm -rf .build/TestResults.xcresult",
+  "mise-tasks/xcodebuild test -resultBundlePath .build/TestResults.xcresult",
+]
+
+[tasks.unused]
+description = "Find unused code with Periphery (scans the index from `mise run build`)"
+depends = ["build"]
+run = """
+periphery scan --skip-build --strict \
+  --index-store-path "$DERIVED_DATA/Index.noindex/DataStore" \
+  ${GITHUB_ACTIONS:+--format github-actions}
+"""
+
+[tasks."xcode:select"]
+description = "Select the pinned Xcode version (CI runners)"
+run = 'sudo xcode-select -s "/Applications/Xcode_${XCODE_VERSION}.app"'

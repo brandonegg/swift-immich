@@ -1,0 +1,23 @@
+version: 2
+updates:
+  # Swift packages referenced from SwiftImmich.xcodeproj
+  - package-ecosystem: "swift"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      swift-packages:
+        patterns: ["*"]
+    commit-message:
+      prefix: "deps"
+
+  # Versions of actions used in .github/workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "ci"

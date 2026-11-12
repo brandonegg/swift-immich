@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Enabled automatically by `mise install` (sets core.hooksPath to .githooks).
+# GUI git clients often run hooks without the shell's PATH, so fall back to
+# common install locations.
+for candidate in "$(command -v mise 2>/dev/null)" /opt/homebrew/bin/mise /usr/local/bin/mise "$HOME/.local/bin/mise"; do
+    if [ -n "$candidate" ] && [ -x "$candidate" ]; then
+        exec "$candidate" run pre-commit
+    fi
+done
+
+echo "✗ pre-commit: mise not found. Install it (brew install mise) and run \`mise install\`." >&2
+exit 1
