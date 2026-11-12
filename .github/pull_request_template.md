@@ -16,7 +16,7 @@
 
 ## Checklist
 
-- [ ] `scripts/lint.sh` passes (swift-format + SwiftLint)
+- [ ] `mise run lint` passes (swift-format + SwiftLint)
 - [ ] Tests added or updated where it makes sense
 - [ ] No new Periphery (unused code) warnings
 - [ ] UI checked in light and dark mode, and with larger Dynamic Type sizes

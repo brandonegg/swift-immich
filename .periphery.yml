@@ -1,5 +1,5 @@
 # Periphery (unused code detection) — https://github.com/peripheryapp/periphery
-# Run locally with: periphery scan
+# Run with: mise run unused
 project: SwiftImmich.xcodeproj
 schemes:
   - SwiftImmich

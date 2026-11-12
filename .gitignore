@@ -21,3 +21,6 @@ playground.xcworkspace
 .swiftpm/
 Packages/
 Package.resolved.bak
+
+# mise: per-developer overrides (e.g. SIMULATOR_DESTINATION)
+mise.local.toml

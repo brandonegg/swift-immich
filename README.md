@@ -20,13 +20,30 @@ xcodebuild test -project SwiftImmich.xcodeproj -scheme SwiftImmich \
 
 ## Development setup
 
-Run once after cloning:
+Tooling is managed with [mise](https://mise.jdx.dev). `mise.toml` pins the CLI tools and defines the project's tasks. Run once after cloning:
 
 ```sh
-scripts/setup.sh
+brew install mise
+mise install
 ```
 
-This installs SwiftLint, Periphery and xcbeautify (from the `Brewfile`) and turns on the git pre-commit hook.
+`mise install` installs the pinned tools (verified against `mise.lock`) and turns on the git pre-commit hook.
+
+| Task | What it does |
+| --- | --- |
+| `mise run doctor` | Checks that your Xcode and SwiftLint versions match the project's pins |
+| `mise run format` | Formats Swift sources in place and auto-fixes SwiftLint issues |
+| `mise run lint` | Runs swift-format and SwiftLint checks (same as CI) |
+| `mise run build` | Builds the app and tests for the simulator |
+| `mise run test` | Runs the unit tests on the simulator |
+| `mise run unused` | Finds unused code with Periphery |
+
+To use a different simulator locally, create a git-ignored `mise.local.toml`:
+
+```toml
+[env]
+SIMULATOR_DESTINATION = "platform=iOS Simulator,name=iPhone 18 Pro,OS=27.2"
+```
 
 | Tool | Purpose | Config |
 | --- | --- | --- |
@@ -34,10 +51,8 @@ This installs SwiftLint, Periphery and xcbeautify (from the `Brewfile`) and turn
 | [SwiftLint](https://github.com/realm/SwiftLint) | Linting; also runs in Xcode builds | `.swiftlint.yml` |
 | [Periphery](https://github.com/peripheryapp/periphery) | Unused code detection | `.periphery.yml` |
 
-- `scripts/format.sh` formats everything in place.
-- `scripts/lint.sh` runs the same checks as CI.
-- `periphery scan` finds unused code.
-
 The first time you open the project, Xcode asks you to trust the SwiftLint build plugin. Click **Trust & Enable**.
 
-CI (`.github/workflows/ci.yml`) runs lint, build and test, and Periphery on every pull request. Dependabot keeps Swift packages and GitHub Actions up to date.
+SwiftLint is pinned in two places: `mise.toml` for the command line, and the `SwiftLintPlugins` package in the Xcode project for in-Xcode warnings. `mise run doctor` fails (locally and in CI) if they differ. Dependabot bumps the Xcode package; when it does, bump `mise.toml` to match with `mise up --bump`.
+
+CI (`.github/workflows/ci.yml`) runs `doctor`, `lint`, `test` and `unused` through mise on every pull request.

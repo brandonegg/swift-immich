@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#MISE description="Check that local tools match the project's pinned versions"
+set -euo pipefail
+
+status=0
+
+xcode=$(xcodebuild -version | awk 'NR==1 {print $2}')
+if [ "$xcode" = "$XCODE_VERSION" ]; then
+    echo "✓ Xcode $xcode"
+else
+    echo "✗ Xcode $xcode is selected, but the project expects $XCODE_VERSION (XCODE_VERSION in mise.toml)"
+    status=1
+fi
+
+cli=$(swiftlint version)
+plugin=$(awk '/SwiftLintPlugins/ {found=1} found && /version = / {gsub(/[[:space:];]/, ""); sub(/version=/, ""); print; exit}' \
+    SwiftImmich.xcodeproj/project.pbxproj)
+if [ "$cli" = "$plugin" ]; then
+    echo "✓ SwiftLint $cli (CLI and Xcode plugin)"
+else
+    echo "✗ SwiftLint CLI is $cli (mise.toml) but the Xcode plugin is pinned to $plugin (SwiftLintPlugins package)"
+    status=1
+fi
+
+exit $status
