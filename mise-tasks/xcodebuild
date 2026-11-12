@@ -11,6 +11,8 @@ flags=(
     -clonedSourcePackagesDirPath .build/SourcePackages
     -skipPackagePluginValidation
     -skipMacroValidation
+    # Shared by build and test so both use identical build settings (no rebuild).
+    -enableCodeCoverage YES
 )
 
 xcodebuild "$@" "${flags[@]}" | xcbeautify ${GITHUB_ACTIONS:+--renderer github-actions}

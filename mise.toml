@@ -56,7 +56,7 @@ run = "mise-tasks/xcodebuild build-for-testing"
 description = "Build and run unit tests on the simulator"
 run = [
   "rm -rf .build/TestResults.xcresult",
-  "mise-tasks/xcodebuild test -resultBundlePath .build/TestResults.xcresult -enableCodeCoverage YES",
+  "mise-tasks/xcodebuild test -resultBundlePath .build/TestResults.xcresult",
 ]
 
 [tasks.unused]
