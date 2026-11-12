@@ -6,5 +6,7 @@ schemes:
 retain_swift_ui_previews: true
 # API response models often decode fields we don't read yet.
 retain_codable_properties: true
+# ImmichAPI is a library: its public API is retained even before the app uses it.
+retain_public: true
 relative_results: true
 disable_update_check: true

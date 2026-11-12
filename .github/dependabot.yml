@@ -1,8 +1,8 @@
 version: 2
 updates:
-  # Swift packages referenced from SwiftImmich.xcodeproj
+  # Swift packages referenced from SwiftImmich.xcodeproj and the ImmichAPI package
   - package-ecosystem: "swift"
-    directory: "/"
+    directories: ["/", "/ImmichAPI"]
     schedule:
       interval: "weekly"
     groups:
