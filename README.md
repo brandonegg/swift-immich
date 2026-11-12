@@ -11,12 +11,7 @@ A native iOS client for [Immich](https://immich.app), the self-hosted photo and 
 
 Open `SwiftImmich.xcodeproj` in Xcode and run the `SwiftImmich` scheme.
 
-From the command line:
-
-```sh
-xcodebuild test -project SwiftImmich.xcodeproj -scheme SwiftImmich \
-  -destination 'platform=iOS Simulator,name=iPhone 15 Pro'
-```
+To run the tests from the command line, use `mise run test`. See [Development setup](#development-setup) first.
 
 ## Development setup
 
